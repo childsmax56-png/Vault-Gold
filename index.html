@@ -304,5 +304,56 @@
 
   <footer class="footer">© 2026 VAULTgold</footer>
 
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var code = params.get('code');
+      var stateParam = params.get('state');
+      if (!code || !stateParam) return;
+
+      window.history.replaceState({}, '', window.location.pathname);
+
+      var parsed;
+      try { parsed = JSON.parse(atob(stateParam)); } catch (e) { return; }
+
+      var codeVerifier = parsed.v;
+      var returnTo = parsed.r;
+      if (!codeVerifier || !returnTo) return;
+
+      var ALLOWED = [
+        'https://yzyarchives.org',
+        'https://vampgold.pages.dev',
+        'https://kdotgold.pages.dev',
+        'https://drizzygold.pages.dev',
+        'http://127.0.0.1:5173',
+        'http://localhost:5173',
+      ];
+      if (!ALLOWED.includes(returnTo)) return;
+
+      fetch('https://accounts.spotify.com/api/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          grant_type: 'authorization_code',
+          code: code,
+          redirect_uri: 'https://vaultgold.net/',
+          client_id: 'c9bdd79bf657487d8973f4c1510523ea',
+          code_verifier: codeVerifier,
+        }),
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (!data.access_token) return;
+          var hash = new URLSearchParams({
+            spotify_access_token: data.access_token,
+            spotify_refresh_token: data.refresh_token || '',
+            spotify_expires_in: String(data.expires_in || 3600),
+          });
+          window.location.href = returnTo + '/#' + hash.toString();
+        })
+        .catch(function () {});
+    })();
+  </script>
+
 </body>
 </html>
