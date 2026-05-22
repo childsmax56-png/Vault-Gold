@@ -85,6 +85,7 @@ function errorPage(msg: string) {
 
 function successPage(service: string) {
   return `<!doctype html><html><head><script>
+    try { localStorage.setItem('vg_linked', JSON.stringify({ service: '${service}', t: Date.now() })); } catch(e) {}
     if (window.opener) { window.opener.postMessage({ vaultgold: '${service}_linked' }, '*'); window.close(); }
     else { setTimeout(() => { window.location.href = 'https://vaultgold.net/account'; }, 1500); }
   </script></head><body style="font-family:sans-serif;padding:2rem;background:#050505;color:#fff">

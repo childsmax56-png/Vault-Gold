@@ -106,6 +106,7 @@ function errorPage(msg: string) {
 
 function successPage() {
   return `<!doctype html><html><head><script>
+    try { localStorage.setItem('vg_linked', JSON.stringify({ service: 'lastfm', t: Date.now() })); } catch(e) {}
     if (window.opener) { window.opener.postMessage({ vaultgold: 'lastfm_linked' }, '*'); window.close(); }
     else { setTimeout(() => { window.location.href = 'https://vaultgold.net/account'; }, 1500); }
   </script></head><body style="font-family:sans-serif;padding:2rem;background:#050505;color:#fff">

@@ -372,6 +372,14 @@
     }
   });
 
+  // Fallback: localStorage storage event fires cross-tab when window.opener is nulled by cross-origin OAuth
+  window.addEventListener('storage', function(e) {
+    if (e.key === 'vg_linked' && e.newValue) {
+      loadLinked();
+      try { localStorage.removeItem('vg_linked'); } catch(err) {}
+    }
+  });
+
   // Handle Google callback redirecting back here with token
   (function() {
     var params = new URLSearchParams(window.location.search);
