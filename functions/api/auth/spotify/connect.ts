@@ -22,9 +22,10 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
   const codeChallenge = await pkceChallenge(codeVerifier);
   const state = btoa(JSON.stringify({ token: sessionToken, v: codeVerifier, r: returnTo }));
 
+  const clientId = env.SPOTIFY_CLIENT_ID || 'c9bdd79bf657487d8973f4c1510523ea';
   const params = new URLSearchParams({
     response_type: 'code',
-    client_id: env.SPOTIFY_CLIENT_ID,
+    client_id: clientId,
     scope: 'streaming user-read-email user-read-private user-modify-playback-state user-read-playback-state',
     redirect_uri: `${url.origin}/api/auth/spotify/callback`,
     state,

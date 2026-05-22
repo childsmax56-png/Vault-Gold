@@ -27,6 +27,7 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
   );
   if (!session) return errorPage('Session expired — please sign in again');
 
+  const clientId = env.SPOTIFY_CLIENT_ID || 'c9bdd79bf657487d8973f4c1510523ea';
   const res = await fetch('https://accounts.spotify.com/api/token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -34,7 +35,7 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
       grant_type: 'authorization_code',
       code,
       redirect_uri: `${url.origin}/api/auth/spotify/callback`,
-      client_id: env.SPOTIFY_CLIENT_ID,
+      client_id: clientId,
       code_verifier: codeVerifier,
     }),
   });
