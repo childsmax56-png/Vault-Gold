@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <title>VaultGold Account</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #050505;
+      --card-bg: #0f0f0f;
+      --card-border: rgba(255,255,255,0.06);
+      --gold: #C9A224;
+      --gold-dim: rgba(201,162,36,0.15);
+      --white: #ffffff;
+      --muted: rgba(255,255,255,0.45);
+      --error: #e55;
+      --success: #4c4;
+    }
+    html, body { height: 100%; background: var(--bg); color: var(--white); font-family: 'Inter', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    body { min-height: 100vh; padding: 24px 24px 64px; display: flex; flex-direction: column; align-items: center; }
+
+    .logo-link { text-decoration: none; margin-bottom: 48px; margin-top: 8px; }
+    .logo-link img { height: 60px; width: auto; }
+
+    .card {
+      width: 100%; max-width: 440px;
+      background: var(--card-bg); border: 1px solid var(--card-border);
+      border-radius: 16px; padding: 32px;
+    }
+    .card + .card { margin-top: 16px; }
+
+    h2 { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 20px; }
+    h2 span { color: var(--gold); }
+
+    .tab-row { display: flex; gap: 4px; margin-bottom: 24px; border-bottom: 1px solid var(--card-border); padding-bottom: 0; }
+    .tab {
+      padding: 8px 16px; font-size: 13px; font-weight: 600; border: none; background: none;
+      color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+    label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; margin-top: 16px; }
+    label:first-of-type { margin-top: 0; }
+    input[type=text], input[type=email], input[type=password] {
+      width: 100%; background: #1a1a1a; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;
+      color: #fff; font-family: inherit; font-size: 14px; padding: 10px 12px; outline: none;
+      transition: border-color 0.15s;
+    }
+    input:focus { border-color: var(--gold); }
+
+    .btn {
+      width: 100%; margin-top: 20px; padding: 12px; border-radius: 8px; border: none;
+      font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn-gold { background: var(--gold); color: #000; }
+    .btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.15); color: #fff; margin-top: 10px; }
+    .btn-google {
+      background: #fff; color: #000; margin-top: 10px;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    .btn-google svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+    .divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; color: var(--muted); font-size: 12px; }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--card-border); }
+
+    .message { font-size: 13px; margin-top: 14px; border-radius: 6px; padding: 10px 12px; display: none; }
+    .message.error { background: rgba(221,85,85,0.1); border: 1px solid rgba(221,85,85,0.3); color: var(--error); display: block; }
+    .message.success { background: rgba(68,204,68,0.1); border: 1px solid rgba(68,204,68,0.3); color: var(--success); display: block; }
+
+    /* Service rows */
+    .service-row {
+      display: flex; align-items: center; gap: 12px; padding: 14px 0;
+      border-bottom: 1px solid var(--card-border);
+    }
+    .service-row:last-child { border-bottom: none; }
+    .service-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .service-icon.spotify { background: rgba(29,185,84,0.15); }
+    .service-icon.lastfm { background: rgba(210,0,0,0.15); }
+    .service-info { flex: 1; }
+    .service-name { font-size: 14px; font-weight: 600; }
+    .service-status { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .service-status.linked { color: #4c4; }
+    .btn-sm {
+      padding: 7px 14px; border-radius: 6px; font-size: 12px; font-weight: 700;
+      cursor: pointer; border: none; font-family: inherit; transition: opacity 0.15s;
+    }
+    .btn-sm:hover { opacity: 0.8; }
+    .btn-sm.connect { background: var(--gold); color: #000; }
+    .btn-sm.disconnect { background: rgba(255,255,255,0.07); color: var(--muted); border: 1px solid rgba(255,255,255,0.1); }
+
+    .user-header { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+    .avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--gold-dim); border: 2px solid var(--gold); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; color: var(--gold); flex-shrink: 0; }
+    .user-name { font-size: 18px; font-weight: 800; }
+    .user-email { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+    .sign-out-btn { background: none; border: 1px solid rgba(255,255,255,0.1); color: var(--muted); border-radius: 6px; padding: 6px 12px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; margin-left: auto; }
+    .sign-out-btn:hover { border-color: rgba(255,255,255,0.25); color: #fff; }
+
+    #view-auth { display: block; }
+    #view-account { display: none; }
+
+    .footer { margin-top: 40px; font-size: 12px; color: rgba(255,255,255,0.2); letter-spacing: 0.08em; text-transform: uppercase; }
+    .footer a { color: rgba(255,255,255,0.3); text-decoration: none; }
+    .footer a:hover { color: var(--gold); }
+  </style>
+</head>
+<body>
+
+  <a class="logo-link" href="https://vaultgold.net">
+    <img src="/logo.png" alt="VAULTgold" />
+  </a>
+
+  <!-- Auth view (login / register) -->
+  <div id="view-auth" class="card">
+    <div class="tab-row">
+      <button class="tab active" id="tab-login" onclick="switchTab('login')">Sign In</button>
+      <button class="tab" id="tab-register" onclick="switchTab('register')">Create Account</button>
+    </div>
+
+    <!-- Login form -->
+    <div id="form-login">
+      <label for="login-login">Username or Email</label>
+      <input type="text" id="login-login" autocomplete="username" placeholder="yourname or you@email.com" />
+      <label for="login-password">Password</label>
+      <input type="password" id="login-password" autocomplete="current-password" placeholder="••••••••" />
+      <button class="btn btn-gold" onclick="doLogin()">Sign In</button>
+      <div class="divider">or</div>
+      <button class="btn btn-google" onclick="doGoogle()">
+        <svg viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+          <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/>
+          <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/>
+          <path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/>
+          <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z"/>
+        </svg>
+        Continue with Google
+      </button>
+      <div class="message" id="login-msg"></div>
+    </div>
+
+    <!-- Register form -->
+    <div id="form-register" style="display:none">
+      <label for="reg-username">Username</label>
+      <input type="text" id="reg-username" autocomplete="username" placeholder="yourname" />
+      <label for="reg-email">Email</label>
+      <input type="email" id="reg-email" autocomplete="email" placeholder="you@email.com" />
+      <label for="reg-password">Password</label>
+      <input type="password" id="reg-password" autocomplete="new-password" placeholder="Min. 8 characters" />
+      <button class="btn btn-gold" onclick="doRegister()">Create Account</button>
+      <div class="divider">or</div>
+      <button class="btn btn-google" onclick="doGoogle()">
+        <svg viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+          <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/>
+          <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/>
+          <path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/>
+          <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z"/>
+        </svg>
+        Continue with Google
+      </button>
+      <div class="message" id="register-msg"></div>
+    </div>
+  </div>
+
+  <!-- Account view (when signed in) -->
+  <div id="view-account">
+    <div class="card">
+      <div class="user-header">
+        <div class="avatar" id="user-avatar">?</div>
+        <div>
+          <div class="user-name" id="user-name">—</div>
+          <div class="user-email" id="user-email">—</div>
+        </div>
+        <button class="sign-out-btn" onclick="doSignOut()">Sign out</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Connected <span>Services</span></h2>
+
+      <div class="service-row">
+        <div class="service-icon spotify">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#1DB954"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+        </div>
+        <div class="service-info">
+          <div class="service-name">Spotify</div>
+          <div class="service-status" id="spotify-status">Not connected</div>
+        </div>
+        <button class="btn-sm connect" id="spotify-btn" onclick="connectSpotify()">Connect</button>
+      </div>
+
+      <div class="service-row">
+        <div class="service-icon lastfm">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#D20000"><path d="M10.746 17.065l-.62-1.682s-1.006 1.124-2.514 1.124c-1.335 0-2.284-.86-2.284-2.226 0-1.796 1.27-2.484 3.15-2.484h1.219v-.546c0-.876-.497-1.24-1.468-1.24-.858 0-1.794.43-1.794.43l-.544-1.551s1.065-.571 2.512-.571c1.795 0 3.006.897 3.006 2.862v5.884zM9.7 13.256h-.934c-.982 0-1.583.372-1.583 1.142 0 .746.434 1.124 1.123 1.124.81 0 1.394-.686 1.394-1.394v-.872zm4.41 3.81l-2.512-7.17h1.812l1.237 4.04.363 1.352.363-1.363 1.223-4.029h1.795l-2.545 7.17zm5.88 0v-10h1.783v10z"/></svg>
+        </div>
+        <div class="service-info">
+          <div class="service-name">Last.fm</div>
+          <div class="service-status" id="lastfm-status">Not connected</div>
+        </div>
+        <button class="btn-sm connect" id="lastfm-btn" onclick="connectLastfm()">Connect</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <a href="https://vaultgold.net">VAULTgold</a> &nbsp;·&nbsp; © 2026
+  </footer>
+
+<script>
+  const API = 'https://vaultgold.net';
+
+  function getToken() { return localStorage.getItem('vg_token'); }
+  function getUser() { try { return JSON.parse(localStorage.getItem('vg_user') || 'null'); } catch { return null; } }
+
+  function setSession(token, user) {
+    localStorage.setItem('vg_token', token);
+    localStorage.setItem('vg_user', JSON.stringify(user));
+  }
+
+  function clearSession() {
+    localStorage.removeItem('vg_token');
+    localStorage.removeItem('vg_user');
+  }
+
+  function switchTab(tab) {
+    document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+    document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+    document.getElementById('form-login').style.display = tab === 'login' ? '' : 'none';
+    document.getElementById('form-register').style.display = tab === 'register' ? '' : 'none';
+  }
+
+  function showMsg(id, msg, type) {
+    var el = document.getElementById(id);
+    el.textContent = msg;
+    el.className = 'message ' + type;
+  }
+
+  async function doLogin() {
+    var login = document.getElementById('login-login').value.trim();
+    var password = document.getElementById('login-password').value;
+    if (!login || !password) return showMsg('login-msg', 'Please fill in all fields', 'error');
+
+    var res = await fetch(API + '/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ login, password }),
+    });
+    var data = await res.json();
+    if (!res.ok) return showMsg('login-msg', data.error || 'Sign in failed', 'error');
+
+    setSession(data.token, data.user);
+    showAccountView(data.user);
+    loadLinked();
+  }
+
+  async function doRegister() {
+    var username = document.getElementById('reg-username').value.trim();
+    var email = document.getElementById('reg-email').value.trim();
+    var password = document.getElementById('reg-password').value;
+    if (!username || !email || !password) return showMsg('register-msg', 'Please fill in all fields', 'error');
+
+    var res = await fetch(API + '/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, email, password }),
+    });
+    var data = await res.json();
+    if (!res.ok) return showMsg('register-msg', data.error || 'Registration failed', 'error');
+
+    setSession(data.token, data.user);
+    showAccountView(data.user);
+    loadLinked();
+  }
+
+  function doGoogle() {
+    window.location.href = API + '/api/auth/google/connect?return_to=' + encodeURIComponent(window.location.href);
+  }
+
+  async function doSignOut() {
+    var token = getToken();
+    if (token) {
+      await fetch(API + '/api/auth/logout', {
+        method: 'POST',
+        headers: { Authorization: 'Bearer ' + token },
+      }).catch(() => {});
+    }
+    clearSession();
+    document.getElementById('view-account').style.display = 'none';
+    document.getElementById('view-auth').style.display = 'block';
+  }
+
+  function showAccountView(user) {
+    document.getElementById('view-auth').style.display = 'none';
+    document.getElementById('view-account').style.display = 'block';
+    document.getElementById('user-name').textContent = user.username;
+    document.getElementById('user-email').textContent = user.email;
+    document.getElementById('user-avatar').textContent = user.username[0].toUpperCase();
+  }
+
+  async function loadLinked() {
+    var token = getToken();
+    if (!token) return;
+
+    var res = await fetch(API + '/api/auth/me', { headers: { Authorization: 'Bearer ' + token } });
+    if (!res.ok) return;
+    var data = await res.json();
+
+    if (data.linked.spotify) {
+      var u = data.linked.spotify.username;
+      document.getElementById('spotify-status').textContent = 'Connected' + (u ? ' as ' + u : '');
+      document.getElementById('spotify-status').className = 'service-status linked';
+      document.getElementById('spotify-btn').textContent = 'Disconnect';
+      document.getElementById('spotify-btn').className = 'btn-sm disconnect';
+      document.getElementById('spotify-btn').onclick = function() { unlinkService('spotify'); };
+    }
+
+    if (data.linked.lastfm) {
+      var u2 = data.linked.lastfm.username;
+      document.getElementById('lastfm-status').textContent = 'Connected' + (u2 ? ' as ' + u2 : '');
+      document.getElementById('lastfm-status').className = 'service-status linked';
+      document.getElementById('lastfm-btn').textContent = 'Disconnect';
+      document.getElementById('lastfm-btn').className = 'btn-sm disconnect';
+      document.getElementById('lastfm-btn').onclick = function() { unlinkService('lastfm'); };
+    }
+  }
+
+  function connectSpotify() {
+    var token = getToken();
+    var url = API + '/api/auth/spotify/connect?token=' + encodeURIComponent(token) + '&return_to=' + encodeURIComponent(window.location.href);
+    window.open(url, 'spotify-connect', 'width=500,height=700');
+  }
+
+  function connectLastfm() {
+    var token = getToken();
+    var url = API + '/api/auth/lastfm/connect?token=' + encodeURIComponent(token) + '&return_to=' + encodeURIComponent(window.location.href);
+    window.open(url, 'lastfm-connect', 'width=600,height=700');
+  }
+
+  async function unlinkService(service) {
+    var token = getToken();
+    if (!token) return;
+    await fetch(API + '/api/auth/unlink?service=' + service, {
+      method: 'DELETE',
+      headers: { Authorization: 'Bearer ' + token },
+    });
+    // reset UI
+    var statusEl = document.getElementById(service + '-status');
+    var btnEl = document.getElementById(service + '-btn');
+    statusEl.textContent = 'Not connected';
+    statusEl.className = 'service-status';
+    btnEl.textContent = 'Connect';
+    btnEl.className = 'btn-sm connect';
+    btnEl.onclick = service === 'spotify' ? connectSpotify : connectLastfm;
+  }
+
+  // Listen for popup messages (service linked)
+  window.addEventListener('message', function(e) {
+    if (!e.data || !e.data.vaultgold) return;
+    if (e.data.vaultgold === 'signed_in') {
+      setSession(e.data.token, e.data.user);
+      showAccountView(e.data.user);
+      loadLinked();
+    } else if (e.data.vaultgold === 'spotify_linked' || e.data.vaultgold === 'lastfm_linked') {
+      loadLinked();
+    }
+  });
+
+  // Handle Google callback redirecting back here with token
+  (function() {
+    var params = new URLSearchParams(window.location.search);
+    var vgToken = params.get('vg_token');
+    var vgUserRaw = params.get('vg_user');
+    if (vgToken && vgUserRaw) {
+      try {
+        var vgUser = JSON.parse(decodeURIComponent(vgUserRaw));
+        setSession(vgToken, vgUser);
+        window.history.replaceState({}, '', window.location.pathname);
+      } catch(e) {}
+    }
+  })();
+
+  // Init
+  (function init() {
+    var token = getToken();
+    var user = getUser();
+    if (token && user) {
+      showAccountView(user);
+      loadLinked();
+    }
+  })();
+</script>
+
+</body>
+</html>
