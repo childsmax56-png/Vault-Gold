@@ -2,6 +2,7 @@ import { json, generateToken, generateId, SESSION_TTL_MS, CORS_HEADERS } from '.
 
 const ALLOWED_RETURN = [
   'https://yzyarchives.org',
+  'https://yzy-gold.pages.dev',
   'https://vampgold.pages.dev',
   'https://kdotgold.pages.dev',
   'https://drizzygold.pages.dev',
