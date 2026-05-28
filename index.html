@@ -221,6 +221,44 @@
       transform: translate(1px, -1px);
     }
 
+    /* Red card variant */
+    .card-red {
+      --card-accent: #e53e3e;
+      --card-accent-dim: rgba(229,62,62,0.12);
+    }
+
+    .card-red::before {
+      background: radial-gradient(ellipse at 0% 100%, var(--card-accent-dim), transparent 70%);
+    }
+
+    .card-red:hover {
+      border-color: rgba(229,62,62,0.45);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 0 0 1px rgba(229,62,62,0.12);
+    }
+
+    .card-red .card-tag {
+      color: var(--card-accent);
+      background: rgba(229,62,62,0.1);
+      border-color: rgba(229,62,62,0.2);
+    }
+
+    .card-red .card-title span {
+      color: var(--card-accent);
+    }
+
+    .card-red:hover .card-arrow {
+      border-color: var(--card-accent);
+      background: rgba(229,62,62,0.1);
+    }
+
+    .card-red:hover .card-arrow svg {
+      stroke: var(--card-accent);
+    }
+
+    .card-red:hover .card-letter {
+      color: rgba(229,62,62,0.06);
+    }
+
     /* Footer */
     .footer {
       margin-top: 56px;
@@ -318,6 +356,38 @@
         </div>
       </div>
       <div class="card-letter">XXX</div>
+    </a>
+
+    <a class="card card-red" href="https://docs.google.com/spreadsheets/d/1CMwzf-YO7yoNr5d-dsAOGFfHnYfGwXSFh1glniNlrck/edit?gid=1246511510#gid=1246511510" target="_blank" rel="noopener">
+      <div class="card-top">
+        <div class="card-tag">Tyler, the Creator</div>
+        <img src="/WG-01.png" alt="WOLFgold" class="card-logo" />
+      </div>
+      <div class="card-bottom">
+        <span class="card-artist">Wolf</span>
+        <div class="card-arrow">
+          <svg viewBox="0 0 12 12" fill="none" stroke-width="1.5">
+            <path d="M2 10L10 2M10 2H4M10 2v6"/>
+          </svg>
+        </div>
+      </div>
+      <div class="card-letter">WLF</div>
+    </a>
+
+    <a class="card card-red" href="https://docs.google.com/spreadsheets/d/1tD3ytt5wPx4zfcefXi5ATeYhIiDaugWjMS46nZrP568/edit?gid=0#gid=0" target="_blank" rel="noopener">
+      <div class="card-top">
+        <div class="card-tag">Juice WRLD</div>
+        <img src="/JG-01.png" alt="Juicegold" class="card-logo" />
+      </div>
+      <div class="card-bottom">
+        <span class="card-artist">Juice</span>
+        <div class="card-arrow">
+          <svg viewBox="0 0 12 12" fill="none" stroke-width="1.5">
+            <path d="M2 10L10 2M10 2H4M10 2v6"/>
+          </svg>
+        </div>
+      </div>
+      <div class="card-letter">JCE</div>
     </a>
 
   </main>
