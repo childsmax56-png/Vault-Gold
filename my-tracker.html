@@ -494,6 +494,38 @@
       flex-shrink: 0;
     }
 
+    /* ── Notes button / panel ── */
+    .song-notes-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--card-border);
+      color: rgba(255,255,255,0.3);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+
+    .song-notes-btn:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); color: var(--white); }
+    .song-notes-btn.open { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); color: var(--white); }
+
+    .song-notes-panel {
+      display: none;
+      padding: 10px 14px 12px 48px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.65;
+      white-space: pre-wrap;
+      word-break: break-word;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .song-notes-panel.open { display: block; }
+
     /* ── Play button ── */
     .play-btn {
       display: inline-flex;
@@ -906,12 +938,13 @@
       } else {
         era.songs.forEach(function (song, i) {
           var playable = isPillowcase(song.url) || isTempImgur(song.url);
+          var hasUrl = song.url && !/^n\/?a$/i.test(song.url.trim());
+          var hasNotes = !!(song.notes && song.notes.trim());
           html += '<div class="song-row">' +
             '<span class="song-index">' + (i + 1) + '</span>' +
             '<div class="song-info">' +
             '<div class="song-name">' + escHtml(song.name) + '</div>' +
             (song.extra ? '<div class="song-extra">' + escHtml(song.extra) + '</div>' : '') +
-            (song.notes && !song.extra ? '<div class="song-extra">' + escHtml(song.notes) + '</div>' : '') +
             '</div>' +
             '<div class="song-meta">';
           if (song.availableLength) {
@@ -920,7 +953,11 @@
           if (song.quality) {
             html += '<span class="tag">' + escHtml(song.quality) + '</span>';
           }
-          var hasUrl = song.url && !/^n\/?a$/i.test(song.url.trim());
+          if (hasNotes) {
+            html += '<button class="song-notes-btn" data-song-idx="' + i + '" title="View notes">' +
+              '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="10" height="10" rx="1.5"/><path d="M3 4h6M3 6.5h4" stroke-linecap="round"/></svg>' +
+              '</button>';
+          }
           if (playable) {
             html += '<button class="play-btn" data-play-key="' + escAttr(era.name + '||' + song.name) + '" data-song-idx="' + i + '" title="Play">' +
               '<svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M3 2l11 6-11 6V2z"/></svg>' +
@@ -935,6 +972,9 @@
               '</span>';
           }
           html += '</div></div>';
+          if (hasNotes) {
+            html += '<div class="song-notes-panel" id="notes-panel-' + i + '">' + escHtml(song.notes.trim()) + '</div>';
+          }
         });
       }
 
@@ -950,6 +990,16 @@
           var idx = parseInt(btn.getAttribute('data-song-idx'), 10);
           var song = era.songs[idx];
           if (song) playSong(song, era.name);
+        });
+      });
+      content.querySelectorAll('.song-notes-btn').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          var idx = btn.getAttribute('data-song-idx');
+          var panel = document.getElementById('notes-panel-' + idx);
+          if (!panel) return;
+          var open = panel.classList.toggle('open');
+          btn.classList.toggle('open', open);
         });
       });
     }
