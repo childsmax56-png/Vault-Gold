@@ -483,6 +483,17 @@
 
     .song-link:hover { background: rgba(201,162,36,0.1); border-color: rgba(201,162,36,0.3); color: var(--gold); }
 
+    .song-no-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      color: rgba(255,255,255,0.15);
+      flex-shrink: 0;
+    }
+
     /* ── Play button ── */
     .play-btn {
       display: inline-flex;
@@ -909,14 +920,19 @@
           if (song.quality) {
             html += '<span class="tag">' + escHtml(song.quality) + '</span>';
           }
+          var hasUrl = song.url && !/^n\/?a$/i.test(song.url.trim());
           if (playable) {
             html += '<button class="play-btn" data-play-key="' + escAttr(era.name + '||' + song.name) + '" data-song-idx="' + i + '" title="Play">' +
               '<svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M3 2l11 6-11 6V2z"/></svg>' +
               '</button>';
-          } else if (song.url) {
+          } else if (hasUrl) {
             html += '<a class="song-link" href="' + escAttr(song.url) + '" target="_blank" rel="noopener" title="Open link">' +
               '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 10L10 2M10 2H4M10 2v6"/></svg>' +
               '</a>';
+          } else {
+            html += '<span class="song-no-link" title="No link available">' +
+              '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 1l10 10M11 1L1 11" stroke-linecap="round"/></svg>' +
+              '</span>';
           }
           html += '</div></div>';
         });
