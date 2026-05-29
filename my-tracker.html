@@ -483,6 +483,131 @@
 
     .song-link:hover { background: rgba(201,162,36,0.1); border-color: rgba(201,162,36,0.3); color: var(--gold); }
 
+    /* ── Play button ── */
+    .play-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: rgba(201,162,36,0.1);
+      border: 1px solid rgba(201,162,36,0.25);
+      color: var(--gold);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    }
+
+    .play-btn:hover { background: rgba(201,162,36,0.2); border-color: rgba(201,162,36,0.45); transform: scale(1.05); }
+    .play-btn.playing { background: var(--gold); color: #000; border-color: var(--gold); }
+
+    /* ── Mini player ── */
+    #player {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(10,10,10,0.96);
+      border-top: 1px solid var(--card-border);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      padding: 12px 24px;
+      display: none;
+      align-items: center;
+      gap: 16px;
+    }
+
+    #player.visible { display: flex; }
+
+    .player-play {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--gold);
+      border: none;
+      color: #000;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+
+    .player-play:hover { opacity: 0.85; transform: scale(1.05); }
+
+    .player-info { flex: 1; min-width: 0; }
+
+    .player-song {
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .player-era {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .player-progress {
+      flex: 1;
+      max-width: 300px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 3px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--gold);
+      border-radius: 2px;
+      width: 0%;
+      transition: width 0.25s linear;
+      pointer-events: none;
+    }
+
+    .progress-times {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: rgba(255,255,255,0.3);
+      font-weight: 500;
+    }
+
+    .player-close {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--card-border);
+      color: rgba(255,255,255,0.3);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .player-close:hover { background: rgba(255,255,255,0.1); color: var(--white); }
+
     /* ── Responsive ── */
     @media (max-width: 600px) {
       .nav { padding: 16px 18px; }
@@ -550,6 +675,32 @@
     <!-- Content area -->
     <div id="content"></div>
 
+  </div>
+
+  <audio id="audio" preload="none"></audio>
+
+  <!-- Mini player -->
+  <div id="player">
+    <button class="player-play" id="player-play-btn" title="Play/Pause">
+      <svg id="player-play-icon" width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M4 3.5l9 4.5-9 4.5V3.5z"/></svg>
+      <svg id="player-pause-icon" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" style="display:none"><rect x="3" y="2" width="4" height="12" rx="1"/><rect x="9" y="2" width="4" height="12" rx="1"/></svg>
+    </button>
+    <div class="player-info">
+      <div class="player-song" id="player-song-name">—</div>
+      <div class="player-era" id="player-era-name">—</div>
+    </div>
+    <div class="player-progress">
+      <div class="progress-bar" id="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <div class="progress-times">
+        <span id="time-current">0:00</span>
+        <span id="time-total">0:00</span>
+      </div>
+    </div>
+    <button class="player-close" id="player-close" title="Close">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 1l10 10M11 1L1 11" stroke-linecap="round"/></svg>
+    </button>
   </div>
 
   <script>
@@ -743,6 +894,7 @@
         html += '<div style="padding:40px 0;text-align:center;color:var(--muted);font-size:13px;">No songs in this era</div>';
       } else {
         era.songs.forEach(function (song, i) {
+          var playable = isPillowcase(song.url) || isTempImgur(song.url);
           html += '<div class="song-row">' +
             '<span class="song-index">' + (i + 1) + '</span>' +
             '<div class="song-info">' +
@@ -757,7 +909,11 @@
           if (song.quality) {
             html += '<span class="tag">' + escHtml(song.quality) + '</span>';
           }
-          if (song.url) {
+          if (playable) {
+            html += '<button class="play-btn" data-play-key="' + escAttr(era.name + '||' + song.name) + '" data-song-idx="' + i + '" title="Play">' +
+              '<svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M3 2l11 6-11 6V2z"/></svg>' +
+              '</button>';
+          } else if (song.url) {
             html += '<a class="song-link" href="' + escAttr(song.url) + '" target="_blank" rel="noopener" title="Open link">' +
               '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 10L10 2M10 2H4M10 2v6"/></svg>' +
               '</a>';
@@ -771,6 +927,14 @@
       document.getElementById('back-btn').addEventListener('click', function () {
         state.selectedEra = null;
         renderEraGrid(state.eras);
+      });
+      content.querySelectorAll('.play-btn').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          var idx = parseInt(btn.getAttribute('data-song-idx'), 10);
+          var song = era.songs[idx];
+          if (song) playSong(song, era.name);
+        });
       });
     }
 
@@ -842,6 +1006,161 @@
       syncButtons();
       renderEmpty();
     });
+
+    // ── Audio player ──────────────────────────────────────────────
+    var audio = document.getElementById('audio');
+    var player = document.getElementById('player');
+    var playerPlayBtn = document.getElementById('player-play-btn');
+    var playerPlayIcon = document.getElementById('player-play-icon');
+    var playerPauseIcon = document.getElementById('player-pause-icon');
+    var playerSongName = document.getElementById('player-song-name');
+    var playerEraName = document.getElementById('player-era-name');
+    var progressBar = document.getElementById('progress-bar');
+    var progressFill = document.getElementById('progress-fill');
+    var timeCurrent = document.getElementById('time-current');
+    var timeTotal = document.getElementById('time-total');
+    var playerClose = document.getElementById('player-close');
+
+    var currentPlayKey = null; // era+song key for active row highlight
+
+    function isPillowcase(url) {
+      return url && url.includes('pillows.su/f/');
+    }
+
+    function isTempImgur(url) {
+      return url && url.includes('temp.imgur.gg/f/');
+    }
+
+    function getStreamUrl(url) {
+      if (isPillowcase(url)) {
+        var id = url.split('/f/')[1];
+        return Promise.resolve(id ? 'https://api.pillows.su/api/get/' + id : null);
+      }
+      if (isTempImgur(url)) {
+        var tid = url.split('/f/')[1];
+        return fetch('https://temp.imgur.gg/api/file/' + tid)
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (data) {
+            if (!data || !data.cdnUrl) return null;
+            var t = data.type || '';
+            var name = data.name || '';
+            var isZip = t.includes('zip') || name.toLowerCase().endsWith('.zip');
+            var isImg = t.includes('image') || /\.(jpg|jpeg|png|gif|webp)$/i.test(name);
+            if (isZip || isImg) return null;
+            return data.cdnUrl;
+          })
+          .catch(function () { return null; });
+      }
+      return Promise.resolve(null);
+    }
+
+    function formatTime(s) {
+      if (!isFinite(s) || isNaN(s)) return '0:00';
+      var m = Math.floor(s / 60);
+      var sec = Math.floor(s % 60);
+      return m + ':' + (sec < 10 ? '0' : '') + sec;
+    }
+
+    function setPlayPauseIcons(playing) {
+      playerPlayIcon.style.display = playing ? 'none' : '';
+      playerPauseIcon.style.display = playing ? '' : 'none';
+    }
+
+    function updateActiveButton() {
+      document.querySelectorAll('.play-btn').forEach(function (btn) {
+        var key = btn.getAttribute('data-play-key');
+        btn.classList.toggle('playing', key === currentPlayKey && !audio.paused);
+        var icon = btn.querySelector('svg');
+        if (key === currentPlayKey && !audio.paused) {
+          icon.innerHTML = '<rect x="2" y="1" width="4" height="14" rx="1"/><rect x="10" y="1" width="4" height="14" rx="1"/>';
+        } else {
+          icon.innerHTML = '<path d="M3 2l11 6-11 6V2z"/>';
+        }
+      });
+    }
+
+    audio.addEventListener('timeupdate', function () {
+      if (!audio.duration) return;
+      var pct = (audio.currentTime / audio.duration) * 100;
+      progressFill.style.width = pct + '%';
+      progressFill.style.transition = 'none';
+      timeCurrent.textContent = formatTime(audio.currentTime);
+    });
+
+    audio.addEventListener('durationchange', function () {
+      timeTotal.textContent = formatTime(audio.duration);
+    });
+
+    audio.addEventListener('play', function () {
+      setPlayPauseIcons(true);
+      updateActiveButton();
+    });
+
+    audio.addEventListener('pause', function () {
+      setPlayPauseIcons(false);
+      updateActiveButton();
+    });
+
+    audio.addEventListener('ended', function () {
+      setPlayPauseIcons(false);
+      progressFill.style.width = '0%';
+      timeCurrent.textContent = '0:00';
+      updateActiveButton();
+    });
+
+    playerPlayBtn.addEventListener('click', function () {
+      if (audio.paused) { audio.play().catch(function () {}); }
+      else { audio.pause(); }
+    });
+
+    progressBar.addEventListener('click', function (e) {
+      if (!audio.duration) return;
+      var rect = progressBar.getBoundingClientRect();
+      var pct = (e.clientX - rect.left) / rect.width;
+      audio.currentTime = pct * audio.duration;
+    });
+
+    playerClose.addEventListener('click', function () {
+      audio.pause();
+      audio.src = '';
+      player.classList.remove('visible');
+      currentPlayKey = null;
+      updateActiveButton();
+    });
+
+    function playSong(song, eraName) {
+      var url = song.url;
+      var playKey = eraName + '||' + song.name;
+
+      // Toggle pause if same song
+      if (currentPlayKey === playKey && audio.src) {
+        if (audio.paused) { audio.play().catch(function () {}); }
+        else { audio.pause(); }
+        return;
+      }
+
+      playerSongName.textContent = song.name;
+      playerEraName.textContent = eraName;
+      player.classList.add('visible');
+      currentPlayKey = playKey;
+      progressFill.style.width = '0%';
+      timeCurrent.textContent = '0:00';
+      timeTotal.textContent = '0:00';
+
+      getStreamUrl(url).then(function (streamUrl) {
+        if (!streamUrl) {
+          player.classList.remove('visible');
+          currentPlayKey = null;
+          window.open(url, '_blank');
+          return;
+        }
+        audio.src = streamUrl;
+        audio.play().catch(function (e) {
+          if (e.name !== 'AbortError') console.error('Audio play failed', e);
+        });
+        updateActiveButton();
+      });
+    }
 
     // ── Init ──────────────────────────────────────────────────────
     syncButtons();
