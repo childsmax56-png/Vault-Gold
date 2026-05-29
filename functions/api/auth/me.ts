@@ -36,9 +36,14 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
     }
   }
 
+  const userRow = await env.DB.prepare('SELECT custom_tracker_url FROM users WHERE id = ?')
+    .bind(session.user_id)
+    .first<{ custom_tracker_url: string | null }>();
+
   return json({
     user: { id: session.user_id, username: session.username, email: session.email },
     linked,
+    customTrackerUrl: userRow?.custom_tracker_url ?? null,
   });
 };
 

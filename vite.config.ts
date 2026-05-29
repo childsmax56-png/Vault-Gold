@@ -7,6 +7,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
         account: resolve(__dirname, 'account.html'),
+        'my-tracker': resolve(__dirname, 'my-tracker.html'),
       },
     },
   },

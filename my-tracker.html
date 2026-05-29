@@ -1,0 +1,860 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <title>My Tracker — VAULTgold</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #050505;
+      --card-bg: #0f0f0f;
+      --card-border: rgba(255,255,255,0.06);
+      --gold: #C9A224;
+      --gold-dim: rgba(201,162,36,0.15);
+      --white: #ffffff;
+      --muted: rgba(255,255,255,0.45);
+    }
+
+    html, body {
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--white);
+      font-family: 'Inter', system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Nav ── */
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 28px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .nav-logo img {
+      height: 36px;
+      width: auto;
+    }
+
+    .nav-title {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .nav-sep {
+      color: rgba(255,255,255,0.15);
+      font-size: 18px;
+      font-weight: 300;
+    }
+
+    .nav-page {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-account-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--card-border);
+      background: var(--card-bg);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-decoration: none;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .nav-account-btn:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    /* ── Main layout ── */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 40px 28px 80px;
+      max-width: 960px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* ── URL Input Section ── */
+    .url-section {
+      margin-bottom: 40px;
+    }
+
+    .url-section h1 {
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+
+    .url-section h1 span { color: var(--gold); }
+
+    .url-section p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .url-section p code {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 12px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 4px;
+      padding: 1px 6px;
+      color: rgba(255,255,255,0.7);
+    }
+
+    .url-row {
+      display: flex;
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    .url-input {
+      flex: 1;
+      min-width: 0;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 11px 16px;
+      font-size: 13px;
+      font-family: inherit;
+      color: var(--white);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .url-input::placeholder { color: rgba(255,255,255,0.2); }
+    .url-input:focus { border-color: var(--gold); }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 11px 18px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      font-family: inherit;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      cursor: pointer;
+      border: none;
+      transition: opacity 0.15s, border-color 0.15s, background 0.15s;
+      white-space: nowrap;
+    }
+
+    .btn:disabled { opacity: 0.4; cursor: default; }
+
+    .btn-primary { background: var(--gold); color: #000; }
+    .btn-primary:not(:disabled):hover { opacity: 0.85; }
+
+    .btn-ghost {
+      background: var(--card-bg);
+      color: var(--muted);
+      border: 1px solid var(--card-border);
+    }
+
+    .btn-ghost:not(:disabled):hover { border-color: rgba(255,255,255,0.2); color: var(--white); }
+
+    .btn-danger {
+      background: var(--card-bg);
+      color: rgba(255,255,255,0.3);
+      border: 1px solid var(--card-border);
+    }
+
+    .btn-danger:hover { border-color: rgba(229,62,62,0.4); color: #fc8181; }
+
+    .status-msg {
+      margin-top: 10px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .status-ok { color: #68d391; }
+    .status-err { color: #fc8181; }
+
+    /* ── States ── */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 24px;
+      text-align: center;
+    }
+
+    .empty-icon {
+      width: 52px;
+      height: 52px;
+      margin-bottom: 20px;
+      opacity: 0.15;
+    }
+
+    .empty-state h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.3);
+      margin-bottom: 8px;
+    }
+
+    .empty-state p {
+      font-size: 13px;
+      color: rgba(255,255,255,0.18);
+      max-width: 360px;
+      line-height: 1.6;
+    }
+
+    .loading-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 80px 24px;
+    }
+
+    .spinner {
+      width: 28px;
+      height: 28px;
+      border: 2.5px solid rgba(201,162,36,0.2);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-bottom: 16px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-state p { font-size: 13px; color: var(--muted); }
+
+    .error-banner {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 16px 18px;
+      background: rgba(229,62,62,0.08);
+      border: 1px solid rgba(229,62,62,0.2);
+      border-radius: 12px;
+      margin-bottom: 24px;
+    }
+
+    .error-banner svg { flex-shrink: 0; margin-top: 1px; }
+    .error-banner p { font-size: 13px; color: #fc8181; line-height: 1.5; }
+
+    /* ── Era Grid ── */
+    .era-grid-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .era-count {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .era-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 14px;
+    }
+
+    .era-card {
+      position: relative;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 18px 16px 14px;
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+      overflow: hidden;
+    }
+
+    .era-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 0% 100%, var(--gold-dim), transparent 70%);
+      opacity: 0;
+      transition: opacity 0.3s;
+      border-radius: inherit;
+    }
+
+    .era-card:hover {
+      border-color: rgba(201,162,36,0.35);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 32px rgba(0,0,0,0.4);
+    }
+
+    .era-card:hover::before { opacity: 1; }
+
+    .era-card-name {
+      position: relative;
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      margin-bottom: 6px;
+      z-index: 1;
+    }
+
+    .era-card-count {
+      position: relative;
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 500;
+      z-index: 1;
+    }
+
+    /* ── Era Detail ── */
+    .detail-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .back-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--card-border);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .back-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.15); }
+
+    .detail-title {
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+
+    .detail-subtitle {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+      font-weight: 500;
+    }
+
+    /* Song list */
+    .song-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .song-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: var(--card-bg);
+      border: 1px solid transparent;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .song-row:hover { border-color: var(--card-border); background: rgba(255,255,255,0.03); }
+
+    .song-index {
+      font-size: 11px;
+      color: rgba(255,255,255,0.2);
+      font-weight: 600;
+      width: 20px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .song-info { flex: 1; min-width: 0; }
+
+    .song-name {
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .song-extra {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .song-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .tag {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.4);
+      white-space: nowrap;
+    }
+
+    .tag-gold {
+      background: rgba(201,162,36,0.1);
+      border-color: rgba(201,162,36,0.2);
+      color: var(--gold);
+    }
+
+    .song-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--card-border);
+      color: var(--muted);
+      text-decoration: none;
+      flex-shrink: 0;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+
+    .song-link:hover { background: rgba(201,162,36,0.1); border-color: rgba(201,162,36,0.3); color: var(--gold); }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .nav { padding: 16px 18px; }
+      .main { padding: 24px 18px 60px; }
+      .url-row { flex-wrap: wrap; }
+      .url-row .url-input { flex-basis: 100%; }
+      .era-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <a class="nav-logo" href="/">
+      <img src="/logo.png" alt="VAULTgold" />
+      <span class="nav-sep">/</span>
+      <span class="nav-page">My Tracker</span>
+    </a>
+    <div class="nav-right">
+      <a class="nav-account-btn" href="/account">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="8" cy="5" r="3"/>
+          <path d="M2 14c0-3.314 2.686-5 6-5s6 1.686 6 5"/>
+        </svg>
+        Account
+      </a>
+    </div>
+  </nav>
+
+  <div class="main">
+
+    <!-- URL input -->
+    <div class="url-section">
+      <h1>My <span>Tracker</span></h1>
+      <p>
+        Link a public Google Sheet to build your own tracker. Your sheet needs columns:
+        <code>Era</code>, <code>Name</code>, <code>Notes</code>, <code>Available Length</code>, <code>Quality</code>, <code>Link(s)</code>.
+        Share the sheet publicly before linking.
+      </p>
+      <div class="url-row">
+        <input
+          id="url-input"
+          class="url-input"
+          type="text"
+          placeholder="https://docs.google.com/spreadsheets/d/..."
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <button id="btn-load" class="btn btn-primary">Load</button>
+        <button id="btn-refresh" class="btn btn-ghost" title="Refresh" style="display:none">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M13.5 2.5A7 7 0 1 0 14 8" stroke-linecap="round"/>
+            <path d="M14 2.5V6h-3.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button id="btn-clear" class="btn btn-danger" title="Clear" style="display:none">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M3 3l10 10M13 3L3 13" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <div id="status-msg" class="status-msg" style="display:none"></div>
+    </div>
+
+    <!-- Content area -->
+    <div id="content"></div>
+
+  </div>
+
+  <script>
+  (function () {
+    'use strict';
+
+    var VG_API = 'https://vaultgold.net';
+    var STORAGE_KEY = 'vg_my_tracker_url';
+    var TOKEN_KEY = 'vg_token';
+
+    var state = {
+      url: localStorage.getItem(STORAGE_KEY) || '',
+      eras: [],
+      selectedEra: null,
+      loading: false,
+    };
+
+    // Elements
+    var urlInput   = document.getElementById('url-input');
+    var btnLoad    = document.getElementById('btn-load');
+    var btnRefresh = document.getElementById('btn-refresh');
+    var btnClear   = document.getElementById('btn-clear');
+    var statusMsg  = document.getElementById('status-msg');
+    var content    = document.getElementById('content');
+
+    // ── CSV parser ──────────────────────────────────────────────
+    function parseCSV(text) {
+      var rows = [], current = [], field = '', inQuotes = false;
+      for (var i = 0; i < text.length; i++) {
+        var ch = text[i], next = text[i + 1];
+        if (inQuotes) {
+          if (ch === '"' && next === '"') { field += '"'; i++; }
+          else if (ch === '"') { inQuotes = false; }
+          else { field += ch; }
+        } else {
+          if (ch === '"') { inQuotes = true; }
+          else if (ch === ',') { current.push(field); field = ''; }
+          else if (ch === '\n') { current.push(field); field = ''; rows.push(current); current = []; }
+          else if (ch !== '\r') { field += ch; }
+        }
+      }
+      if (field || current.length > 0) { current.push(field); rows.push(current); }
+      if (rows.length < 2) return [];
+      var headers = rows[0];
+      return rows.slice(1)
+        .filter(function (r) { return r.some(function (c) { return c.trim() !== ''; }); })
+        .map(function (r) {
+          var obj = {};
+          headers.forEach(function (h, i) { obj[h] = r[i] || ''; });
+          return obj;
+        });
+    }
+
+    // ── Sheet parser ─────────────────────────────────────────────
+    function parseSheetToEras(rows) {
+      if (!rows.length) return [];
+      var nameKey = Object.keys(rows[0]).find(function (k) { return k.startsWith('Name'); }) || 'Name';
+      var eraMap = {}, eraOrder = [];
+      rows.forEach(function (row) {
+        var rawEra = (row['Era'] || '').trim();
+        var rawName = (row[nameKey] || '').trim();
+        if (!rawEra || !rawName || rawEra.includes('\n')) return;
+        if (!eraMap[rawEra]) {
+          eraMap[rawEra] = { name: rawEra, songs: [] };
+          eraOrder.push(rawEra);
+        }
+        var nl = rawName.indexOf('\n');
+        var name = nl === -1 ? rawName : rawName.substring(0, nl).trim();
+        var extra = nl === -1 ? '' : rawName.substring(nl).trim().replace(/^\n+/, '');
+        var rawUrl = (row['Link(s)'] || '').trim();
+        var links = rawUrl.split('\n').map(function (l) { return l.trim(); }).filter(Boolean);
+        eraMap[rawEra].songs.push({
+          name: name,
+          extra: extra,
+          notes: row['Notes'] || '',
+          availableLength: row['Available Length'] || '',
+          quality: row['Quality'] || '',
+          trackLength: row['Track Length'] || '',
+          url: links[0] || '',
+          urls: links,
+        });
+      });
+      return eraOrder.map(function (n) { return eraMap[n]; });
+    }
+
+    function getSheetExportUrl(input) {
+      var m = input.match(/\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/);
+      if (!m) return null;
+      var id = m[1];
+      var gm = input.match(/[#&?]gid=(\d+)/);
+      return 'https://docs.google.com/spreadsheets/d/' + id + '/export?format=csv' + (gm ? '&gid=' + gm[1] : '');
+    }
+
+    // ── VaultGold account ─────────────────────────────────────────
+    function getToken() { return localStorage.getItem(TOKEN_KEY); }
+
+    function tryLoadFromAccount() {
+      var token = getToken();
+      if (!token || state.url) return;
+      fetch(VG_API + '/api/auth/me', { headers: { Authorization: 'Bearer ' + token } })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (data) {
+          if (data && data.customTrackerUrl && !state.url) {
+            state.url = data.customTrackerUrl;
+            localStorage.setItem(STORAGE_KEY, state.url);
+            urlInput.value = state.url;
+            syncButtons();
+            loadSheet(state.url);
+          }
+        })
+        .catch(function () {});
+    }
+
+    function saveToAccount(url) {
+      var token = getToken();
+      if (!token) return;
+      fetch(VG_API + '/api/auth/settings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+        body: JSON.stringify({ customTrackerUrl: url }),
+      })
+        .then(function (r) { showStatus(r.ok ? 'Saved to VaultGold account' : 'Saved locally', r.ok ? 'ok' : 'err'); })
+        .catch(function () { showStatus('Saved locally', 'ok'); });
+    }
+
+    // ── UI helpers ────────────────────────────────────────────────
+    function showStatus(msg, type) {
+      statusMsg.textContent = msg;
+      statusMsg.className = 'status-msg ' + (type === 'err' ? 'status-err' : 'status-ok');
+      statusMsg.style.display = 'block';
+      setTimeout(function () { statusMsg.style.display = 'none'; }, 3500);
+    }
+
+    function syncButtons() {
+      var has = !!state.url;
+      btnRefresh.style.display = has ? '' : 'none';
+      btnClear.style.display = has ? '' : 'none';
+    }
+
+    function renderEmpty() {
+      content.innerHTML = '<div class="empty-state">' +
+        '<svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>' +
+        '<h3>No tracker linked</h3>' +
+        '<p>Create a Google Sheet with Era and Name columns, share it publicly, then paste the URL above.</p>' +
+        '</div>';
+    }
+
+    function renderLoading() {
+      content.innerHTML = '<div class="loading-state"><div class="spinner"></div><p>Loading tracker…</p></div>';
+    }
+
+    function renderError(msg) {
+      content.innerHTML = '<div class="error-banner">' +
+        '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#fc8181" stroke-width="1.5"><circle cx="8" cy="8" r="7"/><path d="M8 5v3.5M8 11v.5" stroke-linecap="round"/></svg>' +
+        '<p>' + escHtml(msg) + '</p></div>';
+    }
+
+    function renderEraGrid(eras) {
+      if (!eras.length) { renderEmpty(); return; }
+      var html = '<div class="era-grid-header">' +
+        '<span class="era-count">' + eras.length + ' era' + (eras.length !== 1 ? 's' : '') + '</span>' +
+        '</div><div class="era-grid">';
+      eras.forEach(function (era, i) {
+        html += '<div class="era-card" data-idx="' + i + '">' +
+          '<div class="era-card-name">' + escHtml(era.name) + '</div>' +
+          '<div class="era-card-count">' + era.songs.length + ' song' + (era.songs.length !== 1 ? 's' : '') + '</div>' +
+          '</div>';
+      });
+      html += '</div>';
+      content.innerHTML = html;
+      content.querySelectorAll('.era-card').forEach(function (el) {
+        el.addEventListener('click', function () {
+          var idx = parseInt(el.getAttribute('data-idx'), 10);
+          state.selectedEra = state.eras[idx];
+          renderEraDetail(state.selectedEra);
+        });
+      });
+    }
+
+    function renderEraDetail(era) {
+      var html = '<div class="detail-header">' +
+        '<button class="back-btn" id="back-btn">' +
+        '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3L5 8l5 5" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+        '</button>' +
+        '<div><div class="detail-title">' + escHtml(era.name) + '</div>' +
+        '<div class="detail-subtitle">' + era.songs.length + ' song' + (era.songs.length !== 1 ? 's' : '') + '</div></div>' +
+        '</div>' +
+        '<div class="song-list">';
+
+      if (!era.songs.length) {
+        html += '<div style="padding:40px 0;text-align:center;color:var(--muted);font-size:13px;">No songs in this era</div>';
+      } else {
+        era.songs.forEach(function (song, i) {
+          html += '<div class="song-row">' +
+            '<span class="song-index">' + (i + 1) + '</span>' +
+            '<div class="song-info">' +
+            '<div class="song-name">' + escHtml(song.name) + '</div>' +
+            (song.extra ? '<div class="song-extra">' + escHtml(song.extra) + '</div>' : '') +
+            (song.notes && !song.extra ? '<div class="song-extra">' + escHtml(song.notes) + '</div>' : '') +
+            '</div>' +
+            '<div class="song-meta">';
+          if (song.availableLength) {
+            html += '<span class="tag tag-gold">' + escHtml(song.availableLength) + '</span>';
+          }
+          if (song.quality) {
+            html += '<span class="tag">' + escHtml(song.quality) + '</span>';
+          }
+          if (song.url) {
+            html += '<a class="song-link" href="' + escAttr(song.url) + '" target="_blank" rel="noopener" title="Open link">' +
+              '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 10L10 2M10 2H4M10 2v6"/></svg>' +
+              '</a>';
+          }
+          html += '</div></div>';
+        });
+      }
+
+      html += '</div>';
+      content.innerHTML = html;
+      document.getElementById('back-btn').addEventListener('click', function () {
+        state.selectedEra = null;
+        renderEraGrid(state.eras);
+      });
+    }
+
+    function escHtml(s) {
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function escAttr(s) { return escHtml(s); }
+
+    // ── Sheet loading ─────────────────────────────────────────────
+    function loadSheet(url) {
+      var exportUrl = getSheetExportUrl(url);
+      if (!exportUrl) { renderError('Invalid Google Sheets URL. Make sure it starts with https://docs.google.com/spreadsheets/d/…'); return; }
+
+      state.loading = true;
+      btnLoad.disabled = true;
+      renderLoading();
+
+      fetch('/api/sheets-proxy?url=' + encodeURIComponent(exportUrl))
+        .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+        .then(function (rows) {
+          var eras = parseSheetToEras(Array.isArray(rows) ? rows : []);
+          state.eras = eras;
+          state.loading = false;
+          btnLoad.disabled = false;
+          if (!eras.length) {
+            renderError('No data found. Make sure your sheet has Era and Name columns with at least one song row, and is shared publicly ("Anyone with link can view").');
+          } else {
+            state.selectedEra ? renderEraDetail(state.selectedEra) : renderEraGrid(eras);
+          }
+        })
+        .catch(function () {
+          state.loading = false;
+          btnLoad.disabled = false;
+          renderError('Failed to load sheet. Make sure it\'s shared publicly ("Anyone with link can view") and the URL is correct.');
+        });
+    }
+
+    // ── Event handlers ────────────────────────────────────────────
+    btnLoad.addEventListener('click', function () {
+      var url = urlInput.value.trim();
+      if (!url) return;
+      state.url = url;
+      state.selectedEra = null;
+      localStorage.setItem(STORAGE_KEY, url);
+      syncButtons();
+      loadSheet(url);
+      saveToAccount(url);
+    });
+
+    urlInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') btnLoad.click();
+    });
+
+    btnRefresh.addEventListener('click', function () {
+      if (state.url) loadSheet(state.url);
+    });
+
+    btnClear.addEventListener('click', function () {
+      state.url = '';
+      state.eras = [];
+      state.selectedEra = null;
+      localStorage.removeItem(STORAGE_KEY);
+      urlInput.value = '';
+      syncButtons();
+      renderEmpty();
+    });
+
+    // ── Init ──────────────────────────────────────────────────────
+    syncButtons();
+    if (state.url) {
+      urlInput.value = state.url;
+      loadSheet(state.url);
+    } else {
+      renderEmpty();
+      tryLoadFromAccount();
+    }
+
+  })();
+  </script>
+
+</body>
+</html>
